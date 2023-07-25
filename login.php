@@ -47,7 +47,7 @@
 <!DOCTYPE html>
 <body>
   <h2>Login</h2>
-  <form method="post" action="<?php htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
+  <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
     <label>Username:</label><br>
     <input type="text" name="username"><?php echo " $usernameErr" ?><br><br>
     <label>Password:</label><br>

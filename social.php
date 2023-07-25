@@ -74,13 +74,13 @@
         <h3>People You Haven't Met</h3>
         <?php while($row = mysqli_fetch_assoc($newPeople)): ?>
             <?php echo "$row[username]" ?>
-            <form method="post" action="<?php htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
                 <input type="hidden" name="to_user" value="<?php echo $row["username"] ?>">
                 <button name="send" type="submit">Send Request</button><br><br>
             </form>
         <?php endwhile ?>
         <a href="dashboard.php">Go to Dashboard Page</a><br><br>
-        <form method="post" action="<?php htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
+        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
             <button name="logout" type="submit">Logout</button>
         </form>
     <?php else: ?>

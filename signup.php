@@ -54,7 +54,7 @@
 <!DOCTYPE html>
 <body>
   <h2>Sign Up</h2>
-  <form action="<?php htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
+  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
     <label>Username:</label><br>
     <input type="text" name="username"><?php echo " $usernameErr" ?><br><br>
     <label>Password:</label><br>
