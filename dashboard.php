@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include "config/database.php";
+    include "include/header.php";
 
     if(isset($_SESSION["username"])) 
     {
@@ -18,7 +18,7 @@
         {
             $sql = "SELECT context, owner, date FROM tweets WHERE owner = ? OR owner IN (";
             $friendPlaceholders = implode(',', array_fill(0, count($friends), '?'));
-            $sql .= $friendPlaceholders . ") ORDER BY date";
+            $sql .= $friendPlaceholders . ") ORDER BY date DESC";
             $stmt = $conn->prepare($sql);
 
             $bindParams = array_merge(array($_SESSION["username"]), $friends);
@@ -100,9 +100,6 @@
     }
 ?>
 <!DOCTYPE html>
-<head>
-    <title>Dashboard Page</title>
-</head>
 <body>
     <?php if(isset($_SESSION["username"])): ?>
     <h3>Welcome <?php echo $_SESSION["username"]?></h3>
@@ -132,7 +129,5 @@
     </form>
     <?php else: ?>
         <p>You are not logged in!</p><br><br>
-        <a href='login.php'>Go to Login Page</a>
     <?php endif ?>
-</body>
-</html>
+<?php include "include/footer.php" ?>

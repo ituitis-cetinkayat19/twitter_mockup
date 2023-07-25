@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include "config/database.php";
+    include "include/header.php";
 
     if(isset($_SESSION["username"])) 
     {
@@ -69,9 +69,6 @@
 ?>
 
 <!DOCTYPE html>
-<head>
-    <title>Social Page</title>
-</head>
 <body>
     <?php if(isset($_SESSION["username"])): ?>
         <h3>People You Haven't Met</h3>
@@ -88,7 +85,5 @@
         </form>
     <?php else: ?>
         <p>You are not logged in!</p><br><br>
-        <a href='login.php'>Go to Login Page</a>
     <?php endif ?>
-</body>
-</html>
+<?php include "include/footer.php" ?>

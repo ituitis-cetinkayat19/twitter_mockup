@@ -1,6 +1,6 @@
 <?php
   session_start();
-  include "config/database.php";
+  include "include/header.php";
 
   $username = $password = "";
   $usernameErr = $passwordErr = "";
@@ -45,9 +45,6 @@
 ?>
 
 <!DOCTYPE html>
-<head>
-  <title>Login Page</title>
-</head>
 <body>
   <h2>Login</h2>
   <form method="post" action="<?php htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
@@ -58,6 +55,4 @@
     <input type="submit" name="submit" value="Submit">
   </form>
   <br><br>
-  <a href="signup.php">Go to Signup Page</a>
-</body>
-</html>
+<?php include "include/footer.php" ?>
