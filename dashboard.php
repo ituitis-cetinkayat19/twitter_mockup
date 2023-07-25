@@ -55,7 +55,8 @@
             session_destroy();
             header("Location: login.php");
         }
-        elseif(isset($_POST["tweet"])) {
+        elseif(isset($_POST["tweet"])) 
+        {
             if(empty($_POST["context"]))
                 $tweetErr = "Tweet is required!";
             else
@@ -73,7 +74,8 @@
                     echo "Error: " . mysqli_error($conn); 
             }
         }
-        elseif(isset($_POST["accept"])) {
+        elseif(isset($_POST["accept"])) 
+        {
             $sql = "INSERT INTO friends(friend1, friend2) VALUES(?,?)";
             $stmt = $conn->prepare($sql);
             print_r($_POST);
@@ -87,7 +89,8 @@
 
             header("Location: dashboard.php");
         }
-        elseif(isset($_POST["reject"])) {
+        elseif(isset($_POST["reject"])) 
+        {
             $sql = "DELETE FROM friend_requests WHERE from_user = ? AND to_user = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ss", $_POST["from_user"] , $_SESSION["username"]);

@@ -4,44 +4,49 @@
 
   $username = $email = $password = "";
   $usernameErr = $emailErr = $passwordErr = "";
-  if($_SERVER["REQUEST_METHOD"] == "POST") {
-    if(empty($_POST["username"])) {
+  if($_SERVER["REQUEST_METHOD"] == "POST") 
+  {
+    if(empty($_POST["username"]))
       $usernameErr = "Username is required!";
-    } else {
+    else
       $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    }
 
-    if(empty($_POST["email"])) {
+    if(empty($_POST["email"]))
       $emailErr = "Email is required!";
-    } else {
+    else 
+    {
       $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
-      if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      if(!filter_var($email, FILTER_VALIDATE_EMAIL))
         $emailErr = "Invalid email address!";
-      }
     }
 
-    if(empty($_POST["password"])) {
+    if(empty($_POST["password"]))
       $passwordErr = "Password is required!";
-    } elseif($_POST["password"] !== $_POST["confirm"]) {
+    elseif($_POST["password"] !== $_POST["confirm"])
       $passwordErr = "Passwords do not match!";
-    }
 
     $hash = password_hash($_POST["password"], PASSWORD_DEFAULT);
 
-    if(empty($nameErr) && empty($emailErr) && empty($passwordErr)) {
+    if(empty($nameErr) && empty($emailErr) && empty($passwordErr)) 
+    {
       $sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
       $stmt = $conn->prepare($sql);
       $stmt->bind_param("sss", $username, $hash, $email);
 
-
-      if($stmt->execute()) {
+      try
+      {
+        $stmt->execute();
         $_SESSION["username"] = $username;
         header("Location: dashboard.php");
-      } 
-      else
-        echo "Error: " . mysqli_error($conn);
-
-      $stmt->close();
+      }
+      catch(Exception $e)
+      {
+        echo "User with that name already exists!";
+      }
+      finally
+      {
+        $stmt->close();
+      }
     }
   }
 ?>

@@ -4,18 +4,20 @@
 
   $username = $password = "";
   $usernameErr = $passwordErr = "";
-  if($_SERVER["REQUEST_METHOD"] == "POST") {
-    if(empty($_POST["username"])) {
+  if($_SERVER["REQUEST_METHOD"] == "POST") 
+  {
+    if(empty($_POST["username"]))
       $usernameErr = "Username is required!";
-    } else {
+    else
       $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    }
+    
 
-    if(empty($_POST["password"])) {
+    if(empty($_POST["password"]))
       $passwordErr = "Password is required!";
-    }
+    
 
-    if(empty($nameErr) && empty($passwordErr)) {
+    if(empty($nameErr) && empty($passwordErr)) 
+    {
       $sql = "SELECT username, password FROM users WHERE username = ?";
       $stmt = $conn->prepare($sql);
       $stmt->bind_param("s", $username);
@@ -24,17 +26,19 @@
 
       $result = $stmt->get_result();
 
-      if($result->num_rows === 1) {
+      if($result->num_rows === 1) 
+      {
         $row = $result->fetch_assoc();
-        if(password_verify($_POST["password"], $row["password"])) {
+        if(password_verify($_POST["password"], $row["password"])) 
+        {
           $_SESSION["username"] = $username;
           header("Location: dashboard.php");          
-        } else {
+        } 
+        else
           echo "wrong password";
-        }
-      } else {
+      } 
+      else
         echo "wrong username";
-      }
       $stmt->close();
     }
   }
