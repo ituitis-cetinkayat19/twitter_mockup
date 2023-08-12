@@ -4,38 +4,12 @@
 
     if(isset($_SESSION["username"])) 
     {
-        $sql = "SELECT friend1, friend2 FROM Friends WHERE friend1 = ? OR friend2 = ?";
+        $sql = "SELECT username FROM users WHERE username <> ? AND username NOT IN
+        (SELECT friend1 FROM friends WHERE friend2 = ? UNION SELECT friend2 FROM friends WHERE friend1 = ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $_SESSION["username"], $_SESSION["username"]);
-        $stmt->execute();
-
-        $friendships = $stmt->get_result();
-        $friends = array();
-        while($row = mysqli_fetch_assoc($friendships))
-            $friends[] = $row["friend1"] == $_SESSION["username"] ? $row["friend2"] : $row["friend1"];
-
-        if(count($friends) > 0)
-        {
-            $sql = "SELECT username FROM users WHERE username <> ? AND username NOT IN (";
-            $friendPlaceholders = implode(',', array_fill(0, count($friends), '?'));
-            $sql .= $friendPlaceholders . ")";
-            $stmt = $conn->prepare($sql);
-
-            $bindParams = array_merge(array($_SESSION["username"]), $friends);
-            $types = str_repeat('s', count($bindParams));
-
-            $stmt->bind_param($types, ...$bindParams);
-        }
-        else
-        {
-            $sql = "SELECT username FROM users WHERE username <> ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $_SESSION["username"]);
-        }
-        
+        $stmt->bind_param("sss", $_SESSION["username"], $_SESSION["username"], $_SESSION["username"]);
         $stmt->execute();
         $newPeople = $stmt->get_result();
-    
         $stmt->close();
     }
 

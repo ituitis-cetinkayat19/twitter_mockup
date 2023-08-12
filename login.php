@@ -35,10 +35,10 @@
           header("Location: dashboard.php");          
         } 
         else
-          echo "wrong password";
+          $passwordErr = "wrong password";
       } 
       else
-        echo "wrong username";
+        $usernameErr = "wrong username";
       $stmt->close();
     }
   }

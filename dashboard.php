@@ -4,37 +4,19 @@
 
     if(isset($_SESSION["username"])) 
     {
-        $sql = "SELECT friend1, friend2 FROM Friends WHERE friend1 = ? OR friend2 = ?";
+        $sql = "SELECT * FROM tweets WHERE owner = ? OR owner IN
+        (SELECT friend1 FROM friends WHERE friend2 = ? UNION SELECT friend2 FROM friends WHERE friend1 = ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $_SESSION["username"], $_SESSION["username"], $_SESSION["username"]);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $sql = "SELECT friend1 FROM friends WHERE friend2 = ? UNION SELECT friend2 FROM friends WHERE friend1 = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $_SESSION["username"], $_SESSION["username"]);
         $stmt->execute();
+        $friends = $stmt->get_result();
 
-        $friendships = $stmt->get_result();
-        $friends = array();
-        while($row = mysqli_fetch_assoc($friendships))
-            $friends[] = $row["friend1"] == $_SESSION["username"] ? $row["friend2"] : $row["friend1"];
-
-        if(count($friends) > 0) 
-        {
-            $sql = "SELECT * FROM tweets WHERE owner = ? OR owner IN (";
-            $friendPlaceholders = implode(',', array_fill(0, count($friends), '?'));
-            $sql .= $friendPlaceholders . ") ORDER BY date DESC";
-            $stmt = $conn->prepare($sql);
-
-            $bindParams = array_merge(array($_SESSION["username"]), $friends);
-            $types = str_repeat('s', count($bindParams));
-
-            $stmt->bind_param($types, ...$bindParams);
-        }
-        else
-        {
-            $sql = "SELECT * FROM tweets WHERE owner = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $_SESSION["username"]);
-        }
-        $stmt->execute();
-      
-        $result = $stmt->get_result();
         $like_result = array();
         while($row = mysqli_fetch_assoc($result))
         {
@@ -90,12 +72,6 @@
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ss", $_POST["from_user"] , $_SESSION["username"]);
             $stmt->execute();
-
-            $sql = "DELETE FROM friend_requests WHERE from_user = ? AND to_user = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $_POST["from_user"] , $_SESSION["username"]);
-            $stmt->execute();
-
             header("Location: dashboard.php");
         }
         elseif(isset($_POST["reject"])) 
@@ -108,25 +84,14 @@
         }
         elseif(isset($_POST["like_x"]))
         {
-            $sql = "UPDATE tweets SET likes = likes + 1 WHERE tweet_id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $_POST["tweet_id"]);
-            $stmt->execute();
-            
             $sql = "INSERT INTO likes (tweet_id, liked_by) VALUES (?, ?)";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ss", $_POST["tweet_id"], $_SESSION["username"]);
-            $stmt->execute();
-            
+            $stmt->execute();   
             header("Location: dashboard.php");
         }
         elseif(isset($_POST["not_like_x"]))
         {
-            $sql = "UPDATE tweets SET likes = likes - 1 WHERE tweet_id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $_POST["tweet_id"]);
-            $stmt->execute();
-
             $sql = "DELETE FROM likes WHERE tweet_id = ? AND liked_by = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ss", $_POST["tweet_id"], $_SESSION["username"]);
@@ -169,9 +134,9 @@
     <?php endwhile ?>
     <br>
     <h3>Friends</h3>
-    <?php foreach($friends as $friend): ?>
-        <?php echo $friend . "<br>" ?>
-    <?php endforeach ?>
+    <?php while($row = mysqli_fetch_assoc($friends)): ?>
+        <?php echo $row["friend1"] . "<br>" ?>
+    <?php endwhile ?>
     <br><br>
     <a href="social.php">Meet New People!</a><br><br>
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>">
